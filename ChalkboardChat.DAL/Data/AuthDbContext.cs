@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChalkboardChat.DAL.Data;
-internal class AuthDbContext : IdentityDbContext<IdentityUser> {
-    public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) {
-        // Options innehåller connection string och inställningar för EF Core
-        // så att EF vet hur den ska ansluta till databasen.
-    }
+
+public class AuthDbContext : IdentityDbContext<IdentityUser> {
+    // The constructor takes DbContextOptions and passes it to the base class constructor
+    public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) { }
 }

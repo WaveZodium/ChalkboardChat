@@ -9,18 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Register the DbContext with SQL Server provider and connection string through dependency injection
-// Scoped lifetime is suitable for DbContext in web applications, which aligns with the request lifecycle
-// That means a new DbContext instance is created per web request
+// Add EF Core DbContext for the application data.
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
+    builder.Configuration.GetConnectionString("AppConnection")
 ));
 
-// Add EF Core DbContext for Identity.
-// This will allow us to use the IdentityDbContext to manage users, roles,
-// and other identity-related data in the database.
-// The connection string is retrieved from the configuration (appsettings.json) under the name "AuthConnection".
-builder.Services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(
+// Add EF Core DbContext for authentication and identity management.
+builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("AuthConnection")
 ));
 
@@ -38,7 +33,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(
             options.Password.RequiredUniqueChars = 0;
         })
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<IdentityDbContext>();
+    .AddEntityFrameworkStores<AuthDbContext>();
 
 // Configure authentication and authorization services.
 builder.Services.AddAuthorization(options => {
