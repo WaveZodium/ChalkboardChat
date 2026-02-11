@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChalkboardChat.DAL.Repositories
-{
-    internal class UserRepository
-    {
-    }
+namespace ChalkboardChat.DAL.Repositories;
+
+public class UserRepository : IUserRepository {
+    public UserRepository() { }
 }
