@@ -79,4 +79,9 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
+// Seed the admin user and role.
+using (var scope = app.Services.CreateScope()) {
+    await IdentitySeeder.SeedAdminAsync(scope.ServiceProvider);
+}
+
 app.Run();
