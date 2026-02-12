@@ -66,4 +66,36 @@ public class MessageRepositoryTests {
         Assert.Equal("Second", all[0].Text);
         Assert.Equal("First", all[1].Text);
     }
+
+    [Fact]
+    public void Update_ChangesMessage()
+    {
+        using var context = CreateContext();
+        ResetDatabase(context);
+        var repo = new MessageRepository(context);
+
+        var message = new MessageModel { Text = "Old", UserId = "user-1" };
+        repo.Add(message);
+
+        message.Text = "New";
+        repo.Update(message);
+
+        var updated = repo.GetById(message.Id);
+        Assert.Equal("New", updated.Text);
+    }
+
+    [Fact]
+    public void Delete_RemovesMessage()
+    {
+        using var context = CreateContext();
+        ResetDatabase(context);
+        var repo = new MessageRepository(context);
+
+        var message = new MessageModel { Text = "ToDelete", UserId = "user-1" };
+        repo.Add(message);
+
+        repo.Delete(message.Id);
+
+        Assert.Empty(repo.GetAll());
+    }
 }
