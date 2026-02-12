@@ -1,6 +1,6 @@
 namespace ChalkboardChat.DAL.Models;
 
-public class MessageModel
+public class MessageEntity
 {
     public int Id { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
