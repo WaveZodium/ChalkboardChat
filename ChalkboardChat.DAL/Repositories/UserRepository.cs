@@ -1,48 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ChalkboardChat.DAL.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChalkboardChat.DAL.Repositories;
 
-public class UserRepository : IUserRepository {
+public class UserRepository : IUserRepository
+{
     private readonly AuthDbContext _context;
 
-    public UserRepository(AuthDbContext context) {
+    public UserRepository(AuthDbContext context)
+    {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public void Add(IdentityUser user) {
+    public async Task AddAsync(IdentityUser user)
+    {
         if (user is null) throw new ArgumentNullException(nameof(user));
         _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public IdentityUser? GetById(string id) {
+    public async Task<IdentityUser?> GetByIdAsync(string id)
+    {
         if (string.IsNullOrWhiteSpace(id)) return null;
-        return _context.Users.FirstOrDefault(u => u.Id == id);
+        return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public IdentityUser? GetByUserName(string userName) {
+    public async Task<IdentityUser?> GetByUserNameAsync(string userName)
+    {
         if (string.IsNullOrWhiteSpace(userName)) return null;
-        return _context.Users.FirstOrDefault(u => u.UserName == userName);
+        return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
     }
 
-    public IEnumerable<IdentityUser> GetAll() {
-        return _context.Users.AsEnumerable();
+    public async Task<IEnumerable<IdentityUser>> GetAllAsync()
+    {
+        return await _context.Users.ToListAsync();
     }
 
-    public void Update(IdentityUser user) {
+    public async Task UpdateAsync(IdentityUser user)
+    {
         if (user is null) throw new ArgumentNullException(nameof(user));
         _context.Users.Update(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(string id) {
-        var entity = GetById(id);
+    public async Task DeleteAsync(string id)
+    {
+        var entity = await GetByIdAsync(id);
         if (entity is null) return;
         _context.Users.Remove(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

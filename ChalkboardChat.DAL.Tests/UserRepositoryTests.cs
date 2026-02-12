@@ -24,89 +24,89 @@ public class UserRepositoryTests
         return new AuthDbContext(options);
     }
 
-    private static void ResetDatabase(AuthDbContext context)
+    private static async Task ResetDatabaseAsync(AuthDbContext context)
     {
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
     }
 
     [Fact]
-    public void Add_Then_GetById_ReturnsUser()
+    public async Task Add_Then_GetById_ReturnsUser()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new UserRepository(context);
 
         var user = new IdentityUser { UserName = "alice" };
-        repo.Add(user);
+        await repo.AddAsync(user);
 
-        var saved = repo.GetById(user.Id);
+        var saved = await repo.GetByIdAsync(user.Id);
 
         Assert.NotNull(saved);
         Assert.Equal("alice", saved!.UserName);
     }
 
     [Fact]
-    public void GetByUserName_ReturnsUser()
+    public async Task GetByUserName_ReturnsUser()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new UserRepository(context);
 
         var user = new IdentityUser { UserName = "bob" };
-        repo.Add(user);
+        await repo.AddAsync(user);
 
-        var saved = repo.GetByUserName("bob");
+        var saved = await repo.GetByUserNameAsync("bob");
 
         Assert.NotNull(saved);
         Assert.Equal(user.Id, saved!.Id);
     }
 
     [Fact]
-    public void GetAll_ReturnsUsers()
+    public async Task GetAll_ReturnsUsers()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new UserRepository(context);
 
-        repo.Add(new IdentityUser { UserName = "user1" });
-        repo.Add(new IdentityUser { UserName = "user2" });
+        await repo.AddAsync(new IdentityUser { UserName = "user1" });
+        await repo.AddAsync(new IdentityUser { UserName = "user2" });
 
-        var all = repo.GetAll().ToList();
+        var all = (await repo.GetAllAsync()).ToList();
 
         Assert.Equal(2, all.Count);
     }
 
     [Fact]
-    public void Update_ChangesUserName()
+    public async Task Update_ChangesUserName()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new UserRepository(context);
 
         var user = new IdentityUser { UserName = "oldname" };
-        repo.Add(user);
+        await repo.AddAsync(user);
 
         user.UserName = "newname";
-        repo.Update(user);
+        await repo.UpdateAsync(user);
 
-        var updated = repo.GetById(user.Id);
+        var updated = await repo.GetByIdAsync(user.Id);
 
         Assert.Equal("newname", updated!.UserName);
     }
 
     [Fact]
-    public void Delete_RemovesUser()
+    public async Task Delete_RemovesUser()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new UserRepository(context);
 
         var user = new IdentityUser { UserName = "todelete" };
-        repo.Add(user);
+        await repo.AddAsync(user);
 
-        repo.Delete(user.Id);
+        await repo.DeleteAsync(user.Id);
 
-        Assert.Empty(repo.GetAll());
+        Assert.Empty(await repo.GetAllAsync());
     }
 }

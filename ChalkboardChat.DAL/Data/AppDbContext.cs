@@ -10,5 +10,5 @@ public class AppDbContext : DbContext {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
     }
 
-    public DbSet<MessageModel> Messages => Set<MessageModel>();
+    public DbSet<MessageEntity> Messages => Set<MessageEntity>();
 }

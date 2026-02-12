@@ -22,28 +22,28 @@ public class MessageRepositoryTests {
         return new AppDbContext(options);
     }
 
-    private static void ResetDatabase(AppDbContext context)
+    private static async Task ResetDatabaseAsync(AppDbContext context)
     {
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
     }
 
     [Fact]
-    public void Add_Then_GetById_ReturnsMessage()
+    public async Task Add_Then_GetById_ReturnsMessage()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new MessageRepository(context);
 
-        var message = new MessageModel
+        var message = new MessageEntity
         {
             Text = "Hello",
             UserId = "user-1"
         };
 
-        repo.Add(message);
+        await repo.AddAsync(message);
 
-        var saved = repo.GetById(message.Id);
+        var saved = await repo.GetByIdAsync(message.Id);
 
         Assert.Equal("Hello", saved.Text);
         Assert.Equal("user-1", saved.UserId);
@@ -51,16 +51,16 @@ public class MessageRepositoryTests {
     }
 
     [Fact]
-    public void GetAll_ReturnsMessages_NewestFirst()
+    public async Task GetAll_ReturnsMessages_NewestFirst()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new MessageRepository(context);
 
-        repo.Add(new MessageModel { Text = "First", UserId = "user-1", CreatedAt = DateTime.UtcNow.AddMinutes(-10) });
-        repo.Add(new MessageModel { Text = "Second", UserId = "user-1", CreatedAt = DateTime.UtcNow });
+        await repo.AddAsync(new MessageEntity { Text = "First", UserId = "user-1", CreatedAt = DateTime.UtcNow.AddMinutes(-10) });
+        await repo.AddAsync(new MessageEntity { Text = "Second", UserId = "user-1", CreatedAt = DateTime.UtcNow });
 
-        var all = repo.GetAll().ToList();
+        var all = (await repo.GetAllAsync()).ToList();
 
         Assert.Equal(2, all.Count);
         Assert.Equal("Second", all[0].Text);
@@ -68,34 +68,34 @@ public class MessageRepositoryTests {
     }
 
     [Fact]
-    public void Update_ChangesMessage()
+    public async Task Update_ChangesMessage()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new MessageRepository(context);
 
-        var message = new MessageModel { Text = "Old", UserId = "user-1" };
-        repo.Add(message);
+        var message = new MessageEntity { Text = "Old", UserId = "user-1" };
+        await repo.AddAsync(message);
 
         message.Text = "New";
-        repo.Update(message);
+        await repo.UpdateAsync(message);
 
-        var updated = repo.GetById(message.Id);
+        var updated = await repo.GetByIdAsync(message.Id);
         Assert.Equal("New", updated.Text);
     }
 
     [Fact]
-    public void Delete_RemovesMessage()
+    public async Task Delete_RemovesMessage()
     {
-        using var context = CreateContext();
-        ResetDatabase(context);
+        await using var context = CreateContext();
+        await ResetDatabaseAsync(context);
         var repo = new MessageRepository(context);
 
-        var message = new MessageModel { Text = "ToDelete", UserId = "user-1" };
-        repo.Add(message);
+        var message = new MessageEntity { Text = "ToDelete", UserId = "user-1" };
+        await repo.AddAsync(message);
 
-        repo.Delete(message.Id);
+        await repo.DeleteAsync(message.Id);
 
-        Assert.Empty(repo.GetAll());
+        Assert.Empty(await repo.GetAllAsync());
     }
 }

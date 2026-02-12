@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ChalkboardChat.DAL.Models;
 
 namespace ChalkboardChat.DAL.Repositories;
 
-public interface IMessageRepository {
-    public void Add(MessageModel message);
-    public MessageModel GetById(int id);
-    public IEnumerable<MessageModel> GetAll();
-    public void Update(MessageModel message);
-    public void Delete(int id);
+public interface IMessageRepository
+{
+    Task AddAsync(MessageEntity message);
+    Task<MessageEntity> GetByIdAsync(int id);
+    Task<IEnumerable<MessageEntity>> GetAllAsync();
+    Task UpdateAsync(MessageEntity message);
+    Task DeleteAsync(int id);
 }
