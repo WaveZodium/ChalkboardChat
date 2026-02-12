@@ -32,7 +32,7 @@ public class MessageService : IMessageService
             return false;
 
         //skapa nytt meddelande
-        var message = new MessageModel
+        var message = new MessageEntity
         {
             Text = dto.Message,
             UserId = dto.UserId,
@@ -40,8 +40,7 @@ public class MessageService : IMessageService
         };
 
         //spara via repository
-        await _repository.AddMessageAsync(message);
-        await _repository.SaveChangesAsync();
+        await _repository.AddAsync(message);
 
         return true;
     }
@@ -50,7 +49,7 @@ public class MessageService : IMessageService
     public async Task<List<MessageDto>> GetAllMessagesAsync(string currentUserId)
     {
         //hämta meddelanden från repository
-        var messages = await _repository.GetAllMessagesWithUsersAsync();
+        var messages = await _repository.GetAllAsync();
 
         //konvertera till dto och sortera nyast först
         var messageDtos = new List<MessageDto>();
