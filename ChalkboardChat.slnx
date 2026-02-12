@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="ChalkboardChat.BLL/ChalkboardChat.BLL.csproj" />
+  <Project Path="ChalkboardChat.DAL.Tests/ChalkboardChat.DAL.Tests.csproj" Id="0cd13bec-df42-484f-8fb4-49fee74471af" />
   <Project Path="ChalkboardChat.DAL/ChalkboardChat.DAL.csproj" />
   <Project Path="ChalkboardChat.UI/ChalkboardChat.UI.csproj" />
 </Solution>
