@@ -1,47 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ChalkboardChat.DAL.Data;
 using ChalkboardChat.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChalkboardChat.DAL.Repositories;
 
-public class MessageRepository : IMessageRepository {
+public class MessageRepository : IMessageRepository
+{
     private readonly AppDbContext _context;
 
-    public MessageRepository(AppDbContext db) {
+    public MessageRepository(AppDbContext db)
+    {
         _context = db;
     }
 
-    public void Add(MessageModel message) {
+    public async Task AddAsync(MessageEntity message)
+    {
         if (message is null) throw new ArgumentNullException(nameof(message));
         _context.Messages.Add(message);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id) {
-        var entity = _context.Messages.Find(id);
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await _context.Messages.FindAsync(id);
         if (entity is null) return;
         _context.Messages.Remove(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public IEnumerable<MessageModel> GetAll() {
-        // Requirement: newest messages first
-        return _context.Messages
+    public async Task<IEnumerable<MessageEntity>> GetAllAsync()
+    {
+        return await _context.Messages
             .OrderByDescending(m => m.CreatedAt)
-            .ToList();
+            .ToListAsync();
     }
 
-    public MessageModel GetById(int id) {
-        var entity = _context.Messages.FirstOrDefault(m => m.Id == id);
+    public async Task<MessageEntity> GetByIdAsync(int id)
+    {
+        var entity = await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
         if (entity is null) throw new KeyNotFoundException($"Message {id} not found.");
         return entity;
     }
 
-    public void Update(MessageModel message) {
+    public async Task UpdateAsync(MessageEntity message)
+    {
         if (message is null) throw new ArgumentNullException(nameof(message));
         _context.Messages.Update(message);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }
