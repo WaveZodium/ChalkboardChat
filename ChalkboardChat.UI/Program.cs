@@ -1,4 +1,4 @@
-// Lokal variabel för att använda inbyggda funktioner för att bygga appen 
+// Lokal variabel fÃ¶ï¿½r att anvï¿½nda inbyggda funktioner fï¿½r att bygga appen 
 using ChalkboardChat.DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,44 +8,44 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-//// Koppla till databas för autentisering och auktorisering (genom Identity) 
+//// Koppla till databas fï¿½r autentisering och auktorisering (genom Identity) 
 //builder.Services.AddDbContext<AuthDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rï¿½dmarkering pga delprojekt 
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rï¿½dmarkering pga delprojekt 
 //{
-//    // Definiera krav för lösenord
-//    options.Password.RequireDigit = false; // Anger att vi inte kräver siffror
-//    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte kräver specialtecken
-//    options.Password.RequireUppercase = false; // Anger att vi inte kräver versaler
-//    options.Password.RequiredLength = 6; // Anger att vi kräver minst 6 tecken i lösenordet
+//    // Definiera krav fï¿½r lï¿½senord
+//    options.Password.RequireDigit = false; // Anger att vi inte krï¿½ver siffror
+//    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte krï¿½ver specialtecken
+//    options.Password.RequireUppercase = false; // Anger att vi inte krï¿½ver versaler
+//    options.Password.RequiredLength = 6; // Anger att vi krï¿½ver minst 6 tecken i lï¿½senordet
 
 //})
 //    .AddRoles<IdentityRole>()
-//    .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
+//    .AddEntityFrameworkStores<AuthDbContext>(); // Rï¿½dmarkering pga delprojekt 
 
-// Definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
+// Definierar rollbaserad policy som krï¿½ver att anvï¿½ndaren har rollen "Admin" fï¿½r att fï¿½ ï¿½tkomst till vissa delar av applikationen
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
 
-// Lägger till autentisering på alla sidor utom startsidan 
+// Lï¿½gger till autentisering pï¿½ alla sidor utom startsidan 
 builder.Services.AddRazorPages(options =>
 {
-    // Här säger vi: Vi kan nå membersidan när vi är inloggade
+    // Hï¿½r sï¿½ger vi: Vi kan nï¿½ membersidan nï¿½r vi ï¿½r inloggade
     options.Conventions.AuthorizeFolder("/Member");
-    // Här säger vi: Vi kan nå adminsidan när vi är inloggade OCH har rollen Admin
+    // Hï¿½r sï¿½ger vi: Vi kan nï¿½ adminsidan nï¿½r vi ï¿½r inloggade OCH har rollen Admin
     options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
 });
 
-// Lägger till kakservice - omdirigerar användaren 
+// Lï¿½gger till kakservice - omdirigerar anvï¿½ndaren 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Login"; // Om en användare inte är inloggad och försöker nå en skyddad sida, omdirigeras de till /Login
-    options.AccessDeniedPath = "/NoAccess"; // Om en inloggad användare försöker nå en sida som kräver en roll de inte har, omdirigeras de till /AccessDenied
+    options.LoginPath = "/Login"; // Om en anvï¿½ndare inte ï¿½r inloggad och fï¿½rsï¿½ker nï¿½ en skyddad sida, omdirigeras de till /Login
+    options.AccessDeniedPath = "/NoAccess"; // Om en inloggad anvï¿½ndare fï¿½rsï¿½ker nï¿½ en sida som krï¿½ver en roll de inte har, omdirigeras de till /AccessDenied
 });
 
-// Lokal variabel för att bygga appen
+// Lokal variabel fï¿½r att bygga appen
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -71,27 +71,27 @@ app.Run();
 
 // UI - PRESENTATIONSLAGER (applikationens ansikte): 
 // Razor Pages
-// Controller (om vi använder MVC)
-// ViewModel-klasser (om vi vill föra samman flera olika objekt i en vy så lägger vi till detta bakom vyn) 
+// Controller (om vi anvï¿½nder MVC)
+// ViewModel-klasser (om vi vill fï¿½ra samman flera olika objekt i en vy sï¿½ lï¿½gger vi till detta bakom vyn) 
 // Anropar services som finns i BLL 
 // Modelstate
 
 // Klient (UI) -> Request -> IService -> Service (BLL) -> 
 // IRepository -> Repository (DAL) -> Databas
-// Detta följer MVC-mönstret och Razor Pages
+// Detta fï¿½ljer MVC-mï¿½nstret och Razor Pages
 
 // Blazor <-> Server 
-// Använder Blazor när en vill arbeta med C# (och inte t ex JAVA) 
-// Blazor Server: Körs på server. Live connection. SignalR (istället för cshtml). 
-// Blazor WebAssembly: Körs på klienten. KRäver mer tänk kring säkerhet. cshtml-filer
+// Anvï¿½nder Blazor nï¿½r en vill arbeta med C# (och inte t ex JAVA) 
+// Blazor Server: Kï¿½rs pï¿½ server. Live connection. SignalR (istï¿½llet fï¿½r cshtml). 
+// Blazor WebAssembly: Kï¿½rs pï¿½ klienten. KRï¿½ver mer tï¿½nk kring sï¿½kerhet. cshtml-filer
 
-// Ny branch för funktionalitet som ska implementeras
-// REKOMMENDERAT att skriva kod på separata ansvarsområden
+// Ny branch fï¿½r funktionalitet som ska implementeras
+// REKOMMENDERAT att skriva kod pï¿½ separata ansvarsomrï¿½den
 // Regelbundna COMMITS
 // Regelbundna PULL
 
 // PUSH branch
-// Skapa PR (pull request) på GitHub (main <- branch) 
-// VIKTIGT: Stå på MAIN och gör en PULL 
-// Stå på din branch : GIT MERGE MAIN (då hamnar alla ändringar från main in i din branch
-// Fortsätt arbeta 
+// Skapa PR (pull request) pï¿½ GitHub (main <- branch) 
+// VIKTIGT: Stï¿½ pï¿½ MAIN och gï¿½r en PULL 
+// Stï¿½ pï¿½ din branch : GIT MERGE MAIN (dï¿½ hamnar alla ï¿½ndringar frï¿½n main in i din branch
+// Fortsï¿½tt arbeta 

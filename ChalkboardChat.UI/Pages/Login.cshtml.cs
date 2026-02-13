@@ -5,28 +5,28 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ChalkboardChat.UI.Pages
 {
-    // En PageModel hanterar logiken för varje Razor Page
-    // En PageModel motsvarar en Controller i MVC-mönstret och ViewModel i MVVM-mönstret
+    // En PageModel hanterar logiken fÃ¶r varje Razor Page
+    // En PageModel motsvarar en Controller i MVC-mÃ¶nstret och ViewModel i MVVM-mÃ¶nstret
     public class LoginModel : PageModel
     {
         // DEL 1 - MANAGER
-        // Skapa relation till SignInManager för att logga in användare och hålla koll på vilken användare som är inloggad (GÖR DEN DET?) 
+        // Skapa relation till SignInManager fÃ¶r att logga in anvÃ¤ndare 
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        // Konstruktor för modellen, tar managers som parametrar  
+        // Konstruktor fÃ¶r modellen, tar managers som parametrar  
         public LoginModel(SignInManager<IdentityUser> signInManager)
         {
             _signInManager = signInManager;
         }
 
         // DEL 2 - REGISTRERINGSMETODER 
-        // Ta emot data från formuläret: EGENSKAPER
+        // Ta emot data frÃ¥n formulÃ¤ret: EGENSKAPER
         [BindProperty, Required]
         public string UserName { get; set; }
         [BindProperty, Required]
         public string Password { get; set; }
 
-        // Ta emot data från formuläret: METOD för att TA EMOT data från användare 
+        // Ta emot data frÃ¥n formulÃ¤ret: METOD fÃ¶r att TA EMOT data frÃ¥n anvÃ¤ndare 
         public async Task<IActionResult> OnPostAsync()
         {
             // Validera inmatningar och spara utfallet i lokal variabel "result" 
@@ -40,7 +40,7 @@ namespace ChalkboardChat.UI.Pages
             // Om inloggningen misslyckas
             else
             {
-                // Lägg till felmeddelande och visa formuläret igen
+                // LÃ¤gg till felmeddelande och visa formulÃ¤ret igen
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return Page();
             }

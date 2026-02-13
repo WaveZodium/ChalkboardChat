@@ -8,54 +8,54 @@ namespace ChalkboardChat.UI.Pages.Member
     public class UserInfoModel : PageModel
     {
         // DEL 1 - MANAGERS
-        // Skapa relation till UserManager fˆr att spara anv‰ndare
+        // Skapa relation till UserManager f√∂r att spara anv√§ndare
         private readonly UserManager<IdentityUser> _userManager;
-        // Skapa relation till SignInManager fˆr att logga in anv‰ndare och hÂlla koll pÂ vilken anv‰ndare som ‰r inloggad (G÷R DEN DET?)
+        // Skapa relation till SignInManager f√∂r att logga in anv√§ndare och h√•lla koll p√• vilken anv√§ndare som √§r inloggad (G√ñR DEN DET?)
         private readonly SignInManager<IdentityUser> _signInManager;
-        // Konstruktor fˆr modellen, tar managers som parametrar
+        // Konstruktor f√∂r modellen, tar managers som parametrar
         public UserInfoModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
         }
         // DEL 2 - REGISTRERINGSMETODER 
-        // Ta emot data frÂn formul‰ret: EGENSKAPER
+        // Ta emot data fr√•n formul√§ret: EGENSKAPER
         [BindProperty, Required]
         public string UserName { get; set; }
         [BindProperty, Required]
         public string Email { get; set; }
         [BindProperty, Required]
         public string Password { get; set; }
-        [BindProperty, Compare(nameof(Password), ErrorMessage = "Passwords do not match.")] // Inbyggd funktion fˆr att j‰mfˆra lˆsenorden 
+        [BindProperty, Compare(nameof(Password), ErrorMessage = "Passwords do not match.")] // Inbyggd funktion f√∂r att j√§mf√∂ra l√∂senorden 
         public string ConfirmPassword { get; set; }
 
-        // Ta emot data frÂn formul‰ret: METOD fˆr att SKAPA och SPARA anv‰ndare 
+        // Ta emot data fr√•n formul√§ret: METOD f√∂r att SKAPA och SPARA anv√§ndare 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) // Om validering misslyckas
             {
-                // -> visa formul‰ret igen med felmeddelanden
+                // -> visa formul√§ret igen med felmeddelanden
                 return Page();
             }
-            // Annars: skapa en ny anv‰ndare med lokala variablen "user" 
-            var user = new IdentityUser { UserName = UserName, Email = Email }; // Ej lˆsenord h‰r! 
+            // Annars: skapa en ny anv√§ndare med lokala variablen "user" 
+            var user = new IdentityUser { UserName = UserName, Email = Email }; // Ej l√∂senord h√§r! 
 
-            // ...och sparar anv‰ndaren i databasen med hj‰lp av lokala variabeln "result" 
-            var result = await _userManager.CreateAsync(user, Password); // H‰r skickar vi med lˆsenord
-            if (result.Succeeded) // Om anv‰ndaren sparas i databasen 
+            // ...och sparar anv√§ndaren i databasen med hj√§lp av lokala variabeln "result" 
+            var result = await _userManager.CreateAsync(user, Password); // H√§r skickar vi med l√∂senord
+            if (result.Succeeded) // Om anv√§ndaren sparas i databasen 
             {
-                // -> logga in anv‰ndaren och omdirigera till startsidan (sidan med meddelanden i detta fall)
+                // -> logga in anv√§ndaren och omdirigera till startsidan (sidan med meddelanden i detta fall)
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToPage("/Start");
             }
             else
             {
-                // Om anv‰ndaren inte sparas i databasen, visa felmeddelanden 
+                // Om anv√§ndaren inte sparas i databasen, visa felmeddelanden 
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-                //... och visa formul‰ret igen 
+                //... och visa formul√§ret igen 
                 return Page();
             }
         }
