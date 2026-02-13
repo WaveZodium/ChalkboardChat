@@ -10,9 +10,10 @@ namespace ChalkboardChat.UI.Pages
     public class RegisterModel : PageModel
     {
         // DEL 1 - MANAGERS
-        // Skapa relation till UserManager för att spara användare 
+        // Skapa relation till UserManager för att spara och hantera användare 
         private readonly UserManager<IdentityUser> _userManager;
-        // Skapa relation till SignInManager för att logga in användare och hålla koll på vilken användare som är inloggad (GÖR DEN DET?) 
+        // Skapa relation till SignInManager för att logga in användare
+        // ... ??? och hålla koll på vilken användare som är inloggad (GÖR DEN DET?) ??? 
         private readonly SignInManager<IdentityUser> _signInManager; 
         
         // Konstruktor för modellen, tar managers som parametrar  
@@ -50,7 +51,7 @@ namespace ChalkboardChat.UI.Pages
             {
                 // -> logga in användaren och omdirigera till startsidan (sidan med meddelanden i detta fall)
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToPage("/Start");
+                return RedirectToPage("/Member/Board");
             }
             else
             {
