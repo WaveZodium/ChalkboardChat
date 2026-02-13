@@ -1,4 +1,4 @@
-// Lokal variabel för att använda inbyggda funktioner för att bygga appen 
+// Lokal variabel fÃ¶r att anvÃ¤nda inbyggda funktioner fÃ¶r att bygga appen 
 using ChalkboardChat.DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,44 +8,44 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-//// Koppla till databas för autentisering och auktorisering (genom Identity) 
+//// Koppla till databas fÃ¶r autentisering och auktorisering (genom Identity) 
 //builder.Services.AddDbContext<AuthDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // RÃ¶dmarkering pga delprojekt 
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => // RÃ¶dmarkering pga delprojekt 
 //{
-//    // Definiera krav för lösenord
-//    options.Password.RequireDigit = false; // Anger att vi inte kräver siffror
-//    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte kräver specialtecken
-//    options.Password.RequireUppercase = false; // Anger att vi inte kräver versaler
-//    options.Password.RequiredLength = 6; // Anger att vi kräver minst 6 tecken i lösenordet
+//    // Definiera krav fÃ¶r lÃ¶senord
+//    options.Password.RequireDigit = false; // Anger att vi inte krÃ¤ver siffror
+//    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte krÃ¤ver specialtecken
+//    options.Password.RequireUppercase = false; // Anger att vi inte krÃ¤ver versaler
+//    options.Password.RequiredLength = 6; // Anger att vi krÃ¤ver minst 6 tecken i lÃ¶senordet
 
 //})
 //    .AddRoles<IdentityRole>()
-//    .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
+//    .AddEntityFrameworkStores<AuthDbContext>(); // RÃ¶dmarkering pga delprojekt 
 
-// Definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
+// Definierar rollbaserad policy som krÃ¤ver att anvÃ¤ndaren har rollen "Admin" fÃ¶r att fÃ¥ Ã¥tkomst till vissa delar av applikationen
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
 
-// Lägger till autentisering på alla sidor utom startsidan 
+// LÃ¤gger till autentisering pÃ¥ alla sidor utom startsidan 
 builder.Services.AddRazorPages(options =>
 {
-    // Här säger vi: Vi kan nå membersidan när vi är inloggade
+    // HÃ¤r sÃ¤ger vi: Vi kan nÃ¥ membersidan nÃ¤r vi Ã¤r inloggade
     options.Conventions.AuthorizeFolder("/Member");
-    // Här säger vi: Vi kan nå adminsidan när vi är inloggade OCH har rollen Admin
+    // HÃ¤r sÃ¤ger vi: Vi kan nÃ¥ adminsidan nÃ¤r vi Ã¤r inloggade OCH har rollen Admin
     options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
 });
 
-// Lägger till kakservice - omdirigerar användaren 
+// LÃ¤gger till kakservice - omdirigerar anvÃ¤ndaren 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Login"; // Om en användare inte är inloggad och försöker nå en skyddad sida, omdirigeras de till /Login
-    options.AccessDeniedPath = "/NoAccess"; // Om en inloggad användare försöker nå en sida som kräver en roll de inte har, omdirigeras de till /AccessDenied
+    options.LoginPath = "/Login"; // Om en anvÃ¤ndare inte Ã¤r inloggad och fÃ¶rsÃ¶ker nÃ¥ en skyddad sida, omdirigeras de till /Login
+    options.AccessDeniedPath = "/NoAccess"; // Om en inloggad anvÃ¤ndare fÃ¶rsÃ¶ker nÃ¥ en sida som krÃ¤ver en roll de inte har, omdirigeras de till /AccessDenied
 });
 
-// Lokal variabel för att bygga appen
+// Lokal variabel fÃ¶r att bygga appen
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,38 +60,45 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
+// Seed the admin user and role.
+using (var scope = app.Services.CreateScope()) {
+    await IdentitySeeder.SeedAdminAsync(scope.ServiceProvider);
+}
+
 app.Run();
 
 
 // UI - PRESENTATIONSLAGER (applikationens ansikte): 
 // Razor Pages
-// Controller (om vi använder MVC)
-// ViewModel-klasser (om vi vill föra samman flera olika objekt i en vy så lägger vi till detta bakom vyn) 
+// Controller (om vi anvÃ¤nder MVC)
+// ViewModel-klasser (om vi vill fÃ¶ra samman flera olika objekt i en vy sÃ¥ lÃ¤gger vi till detta bakom vyn) 
 // Anropar services som finns i BLL 
 // Modelstate
 
 // Klient (UI) -> Request -> IService -> Service (BLL) -> 
 // IRepository -> Repository (DAL) -> Databas
-// Detta följer MVC-mönstret och Razor Pages
+// Detta fÃ¶ljer MVC-mÃ¶nstret och Razor Pages
 
 // Blazor <-> Server 
-// Använder Blazor när en vill arbeta med C# (och inte t ex JAVA) 
-// Blazor Server: Körs på server. Live connection. SignalR (istället för cshtml). 
-// Blazor WebAssembly: Körs på klienten. KRäver mer tänk kring säkerhet. cshtml-filer
+// AnvÃ¤nder Blazor nÃ¤r en vill arbeta med C# (och inte t ex JAVA) 
+// Blazor Server: KÃ¶rs pÃ¥ server. Live connection. SignalR (istÃ¤llet fÃ¶r cshtml). 
+// Blazor WebAssembly: KÃ¶rs pÃ¥ klienten. KRÃ¤ver mer tÃ¤nk kring sÃ¤kerhet. cshtml-filer
 
-// Ny branch för funktionalitet som ska implementeras
-// REKOMMENDERAT att skriva kod på separata ansvarsområden
+// Ny branch fÃ¶r funktionalitet som ska implementeras
+// REKOMMENDERAT att skriva kod pÃ¥ separata ansvarsomrÃ¥den
 // Regelbundna COMMITS
 // Regelbundna PULL
 
 // PUSH branch
-// Skapa PR (pull request) på GitHub (main <- branch) 
-// VIKTIGT: Stå på MAIN och gör en PULL 
-// Stå på din branch : GIT MERGE MAIN (då hamnar alla ändringar från main in i din branch
-// Fortsätt arbeta 
+// Skapa PR (pull request) pÃ¥ GitHub (main <- branch) 
+// VIKTIGT: StÃ¥ pÃ¥ MAIN och gÃ¶r en PULL 
+// StÃ¥ pÃ¥ din branch : GIT MERGE MAIN (dÃ¥ hamnar alla Ã¤ndringar frÃ¥n main in i din branch
+// FortsÃ¤tt arbeta 
