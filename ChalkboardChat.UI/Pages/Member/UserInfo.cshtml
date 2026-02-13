@@ -1,0 +1,21 @@
+﻿@page
+@model ChalkboardChat.UI.Pages.Member.UserInfoModel
+@{
+}
+<h2>Användaruppgifter</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <input asp-for="NewUserName" placeholder="Ange nytt användarnamn" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <input asp-for="NewEmail" placeholder="Ange ny epostadress" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <input asp-for="NewPassword" placeholder="Ange nytt lösenord" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <input asp-for="ConfirmNewPassword" placeholder="Upprepa det nya lösenordet" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Uppdatera uppgifter</button>
+</form>
