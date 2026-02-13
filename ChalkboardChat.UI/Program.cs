@@ -1,62 +1,51 @@
+// Lokal variabel för att använda inbyggda funktioner för att bygga appen 
+using ChalkboardChat.DAL;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using ChalkboardChat.DAL.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Add EF Core DbContext for the application data.
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("AppConnection")
-));
+//// Koppla till databas för autentisering och auktorisering (genom Identity) 
+//builder.Services.AddDbContext<AuthDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
+//{
+//    // Definiera krav för lösenord
+//    options.Password.RequireDigit = false; // Anger att vi inte kräver siffror
+//    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte kräver specialtecken
+//    options.Password.RequireUppercase = false; // Anger att vi inte kräver versaler
+//    options.Password.RequiredLength = 6; // Anger att vi kräver minst 6 tecken i lösenordet
 
-// Add EF Core DbContext for authentication and identity management.
-builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("AuthConnection")
-));
+//})
+//    .AddRoles<IdentityRole>()
+//    .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
 
-// Add Identity services to the container.
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(
-        options => {
-            // Configure password requirements
-            // This setting is for demonstration purposes only.
-            // In a production application, you should use stronger password requirements.
-            options.Password.RequireDigit = false;
-            options.Password.RequireLowercase = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireUppercase = false;
-            options.Password.RequiredLength = 4;
-            options.Password.RequiredUniqueChars = 0;
-        })
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<AuthDbContext>();
-
-// Configure authentication and authorization services.
-builder.Services.AddAuthorization(options => {
-    // Policy �r ett namn p� en regel som kan inneh�lla olika krav.
-    // I det h�r fallet skapar vi en policy som kr�ver att anv�ndaren har rollen "Admin".
-    options.AddPolicy(
-        "AdminOnly",
-        policy => policy.RequireRole("Admin"));
+// Definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
 
-// Configure authorization for Razor Pages.
-builder.Services.AddRazorPages(options => {
-    options.Conventions.AuthorizeFolder("/Member"); // Alla sidor i /Member kr�ver att anv�ndaren �r inloggad
-    options.Conventions.AuthorizeFolder("/Admin", "AdminOnly"); // Alla sidor i /Admin kr�ver att anv�ndaren har rollen "Admin"
+// Lägger till autentisering på alla sidor utom startsidan 
+builder.Services.AddRazorPages(options =>
+{
+    // Här säger vi: Vi kan nå membersidan när vi är inloggade
+    options.Conventions.AuthorizeFolder("/Member");
+    // Här säger vi: Vi kan nå adminsidan när vi är inloggade OCH har rollen Admin
+    options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
 });
 
-builder.Services.ConfigureApplicationCookie(options => {
-    options.LoginPath = "/Login";
-    options.LogoutPath = "/Logout";
-    options.AccessDeniedPath = "/NoAccess";
+// Lägger till kakservice - omdirigerar användaren 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Login"; // Om en användare inte är inloggad och försöker nå en skyddad sida, omdirigeras de till /Login
+    options.AccessDeniedPath = "/NoAccess"; // Om en inloggad användare försöker nå en sida som kräver en roll de inte har, omdirigeras de till /AccessDenied
 });
 
-
+// Lokal variabel för att bygga appen
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -85,3 +74,31 @@ using (var scope = app.Services.CreateScope()) {
 }
 
 app.Run();
+
+
+// UI - PRESENTATIONSLAGER (applikationens ansikte): 
+// Razor Pages
+// Controller (om vi använder MVC)
+// ViewModel-klasser (om vi vill föra samman flera olika objekt i en vy så lägger vi till detta bakom vyn) 
+// Anropar services som finns i BLL 
+// Modelstate
+
+// Klient (UI) -> Request -> IService -> Service (BLL) -> 
+// IRepository -> Repository (DAL) -> Databas
+// Detta följer MVC-mönstret och Razor Pages
+
+// Blazor <-> Server 
+// Använder Blazor när en vill arbeta med C# (och inte t ex JAVA) 
+// Blazor Server: Körs på server. Live connection. SignalR (istället för cshtml). 
+// Blazor WebAssembly: Körs på klienten. KRäver mer tänk kring säkerhet. cshtml-filer
+
+// Ny branch för funktionalitet som ska implementeras
+// REKOMMENDERAT att skriva kod på separata ansvarsområden
+// Regelbundna COMMITS
+// Regelbundna PULL
+
+// PUSH branch
+// Skapa PR (pull request) på GitHub (main <- branch) 
+// VIKTIGT: Stå på MAIN och gör en PULL 
+// Stå på din branch : GIT MERGE MAIN (då hamnar alla ändringar från main in i din branch
+// Fortsätt arbeta 

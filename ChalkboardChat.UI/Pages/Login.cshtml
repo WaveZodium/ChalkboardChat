@@ -1,0 +1,19 @@
+﻿@page
+@model ChalkboardChat.UI.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+<h1>Välkommen!</h1>
+<form method="post">
+    <div>
+        <input type="text" id="login" name="UserName" placeholder="Ange användarnamn" required
+               asp-for="UserName" />
+        @* Anger id ifall vi vill formge mer senare *@
+    </div>
+    <div>
+        <input type="password" id="login" name="Password" placeholder="Ange lösenord" required
+               asp-for="Password" />
+    </div>
+    <button type="submit">Logga in</button>
+</form>
+<a asp-page="/Register">Ännu inte medlem? Registrera dig!</a>

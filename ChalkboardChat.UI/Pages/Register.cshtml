@@ -1,0 +1,26 @@
+﻿@page
+@model ChalkboardChat.UI.Pages.RegisterModel
+@{
+    ViewData["Title"] = "Registration";
+}
+<h2>Ange dina uppgifter</h2>
+<form method="post">
+    <div>
+        <input type="text" id="reg" name="UserName" placeholder="Ange användarnamn" required 
+        asp-for="UserName"/>
+            @* Anger id ifall vi vill formge mer senare *@
+    </div>
+    <div>
+        <input type="email" id="reg" name="Email" placeholder="Ange e-post" required 
+        asp-for="Email"/>
+    </div>
+    <div>
+       <input type="password" id="reg" name="Password" placeholder="Ange lösenord" required
+       asp-for="Password"/>
+    </div>
+    <div>
+        <input type="password" id="reg" name="ConfirmPassword" placeholder="Repetera lösenord" required
+        asp-for="ConfirmPassword" />
+    </div>
+    <button type="submit">Registrera</button>
+</form>
