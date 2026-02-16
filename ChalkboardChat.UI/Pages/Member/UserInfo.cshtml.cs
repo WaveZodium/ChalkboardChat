@@ -21,9 +21,6 @@ namespace ChalkboardChat.UI.Pages.Member
         private readonly IMessageService _iMessengerService;
         // Konstruktor för modellen, tar managers som parametrar
 
-        // Behöver skapa relation med meddelandedatabasen??? 
-        private readonly AppDbContext _appDb;
-
         public UserInfoModel(UserManager<IdentityUser> userManager, IMessageService iMessengerService)
         {
             _userManager = userManager;
