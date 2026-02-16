@@ -8,16 +8,16 @@ using System;
 
 namespace ChalkboardChat.UI.Pages.Member
 {
-    // En PageModel hanterar logiken för varje Razor Page (motsvarar en Controller i MVC-mönstret och ViewModel i MVVM-mönstret)
-    [Authorize] // NÖDVÄNDIGT för att skydda sidan så att endast inloggade användare kan se den
+    // En PageModel hanterar logiken fÃ¶r varje Razor Page (motsvarar en Controller i MVC-mÃ¶nstret och ViewModel i MVVM-mÃ¶nstret)
+    [Authorize] // NÃ–DVÃ„NDIGT fÃ¶r att skydda sidan sÃ¥ att endast inloggade anvÃ¤ndare kan se den
     public class DeleteUserModel : PageModel
     {
         // DEL 1 - MANAGERS 
-        // Skapa relation till UserManager för att hantera inloggad användare
+        // Skapa relation till UserManager fÃ¶r att hantera inloggad anvÃ¤ndare
         private readonly UserManager<IdentityUser> _userManager;
-        // Skapa relation till messageservice för att hantera inloggad användare
+        // Skapa relation till messageservice fÃ¶r att hantera inloggad anvÃ¤ndare
         private readonly IMessageService _iMessengerService;
-        // Konstruktor för modellen, tar managers som parametrar
+        // Konstruktor fÃ¶r modellen, tar managers som parametrar
         public DeleteUserModel(UserManager<IdentityUser> userManager, IMessageService iMessengerService)
         {
             _userManager = userManager;
@@ -25,17 +25,17 @@ namespace ChalkboardChat.UI.Pages.Member
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            // Hämta den inloggade användarens uppgifter
+            // HÃ¤mta den inloggade anvÃ¤ndarens uppgifter
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                // Om användare inte hittas, skicka vidare till inloggningssidan
+                // Om anvÃ¤ndare inte hittas, skicka vidare till inloggningssidan
                 return RedirectToPage("/Login");
             }
-            // Annars: byt användarnamn i användarens meddelanden
+            // Annars: byt anvÃ¤ndarnamn i anvÃ¤ndarens meddelanden
             var username = user.UserName; 
             await _iMessengerService.UpdateWhenExitedAsync(user.Id, username);
-            // ...och ta bort användaren från databasen
+            // ...och ta bort anvÃ¤ndaren frÃ¥n databasen
             await _userManager.DeleteAsync(user); 
             // ...och redirekta till inloggningssidan
             return RedirectToPage("/Login");
