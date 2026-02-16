@@ -11,30 +11,28 @@
 </form>
 <h1>Chalk Board Chat</h1>
 <section>
-    @* Visa lista över alla meddelanden i fallande datumordning (= nyast överst) *@
-    <div class="row">
-        @* Ska bara anropa GET-MESSAGES *@
-    </div>
+    @* Loopa genom meddelandelista och visa dem *@
+    @foreach (var message in Model.Messages)
+    {
+        @* Lokal variabel för egna meddelanden *@
+        var minaMedd = message.UserName == User.Identity?.Name;
+
+        <div class="message" style="border-radius:10px" @(minaMedd ? "bg-info" : "")>
+            @* Highlighta de egna meddelandena *@
+            <p>
+                <strong>@message.UserName</strong>
+                (@message.Date.ToLocalTime())
+            </p>
+            <p>@message.Message</p>
+        </div>
+    }
 </section>
-
-<form>
-    <div>
-        <textarea id="message" name="Message" placeholder="Skriv meddelande här..." > </textarea> 
-    </div>
-    <button type="submit" asp-action="Post">Skicka inlägg</button>
-</form>
-
-@* Loopa genom meddelandelista och visa dem *@
-@foreach (var message in Model.Messages)
-{
-    @* Lokal variabel för egna meddelanden *@
-    var minaMedd = message.UserName == User.Identity?.Name;
-
-    <div class="message" style="border-radius:10px" @(minaMedd ? "bg-info" : "")>
-        @* Highlighta de egna meddelandena *@
-        <p>
-            <strong>@message.UserName</strong>
-            (@message.Date.ToLocalTime())</p>
-        <p>@message.Message</p>
-    </div>
-}
+<section>
+    <form>
+        @* För att skapa meddelande *@
+        <div>
+            <textarea id="message" name="Message" placeholder="Skriv meddelande här..." > </textarea> 
+        </div>
+        <button type="submit" asp-action="Post">Skicka inlägg</button>
+    </form>
+</section>

@@ -1,4 +1,6 @@
+using ChalkboardChat.BLL.Interfaces;
 using ChalkboardChat.DAL.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -6,41 +8,34 @@ using System;
 
 namespace ChalkboardChat.UI.Pages.Member
 {
+    // En PageModel hanterar logiken f√∂r varje Razor Page (motsvarar en Controller i MVC-m√∂nstret och ViewModel i MVVM-m√∂nstret)
+    [Authorize] // N√ñDV√ÑNDIGT f√∂r att skydda sidan s√• att endast inloggade anv√§ndare kan se den
     public class DeleteUserModel : PageModel
     {
         // DEL 1 - MANAGERS 
-        // Skapa relation till UserManager fˆr att hantera inloggad anv‰ndare
+        // Skapa relation till UserManager f√∂r att hantera inloggad anv√§ndare
         private readonly UserManager<IdentityUser> _userManager;
-
-        // Behˆver skapa relation med meddelandedatabasen??? 
-        private readonly AppDbContext _appDb;
-
-        // KONSTRUKTOR fˆr modellen, tar managers som parametrar
-        public DeleteUserModel(UserManager<IdentityUser> userManager, AppDbContext appDb)
+        // Skapa relation till messageservice f√∂r att hantera inloggad anv√§ndare
+        private readonly IMessageService _iMessengerService;
+        // Konstruktor f√∂r modellen, tar managers som parametrar
+        public DeleteUserModel(UserManager<IdentityUser> userManager, IMessageService iMessengerService)
         {
             _userManager = userManager;
-            _appDb = appDb; 
+            _iMessengerService = iMessengerService;
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            // H‰mta den inloggade anv‰ndarens uppgifter
+            // H√§mta den inloggade anv√§ndarens uppgifter
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                // Om anv‰ndare inte hittas, skicka vidare till inloggningssidan
+                // Om anv√§ndare inte hittas, skicka vidare till inloggningssidan
                 return RedirectToPage("/Login");
             }
-            // Annars: hitta anv‰ndarens meddelanden 
+            // Annars: byt anv√§ndarnamn i anv√§ndarens meddelanden
             var username = user.UserName; 
-            var messages = _appDb.Messages.Where(m => m.UserName == username); 
-            // ...och ers‰tt anv‰ndarens namn i hens meddelanden 
-            foreach (var message in messages)
-            {
-                message.UserName = $"{username} (Elvis left the building)";
-            }
-            // ... och spara namn‰ndringen i databasen
-            await _appDb.SaveChangesAsync();
-            // ...och ta bort anv‰ndaren frÂn databasen
+            await _iMessengerService.UpdateWhenExitedAsync(user.Id, username);
+            // ...och ta bort anv√§ndaren fr√•n databasen
             await _userManager.DeleteAsync(user); 
             // ...och redirekta till inloggningssidan
             return RedirectToPage("/Login");
