@@ -24,4 +24,4 @@ namespace ChalkboardChat.BLL.Interfaces
        
     }
 }
-}
+
