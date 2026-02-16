@@ -1,5 +1,6 @@
 // Lokal variabel för att använda inbyggda funktioner för att bygga appen 
 using ChalkboardChat.DAL;
+using ChalkboardChat.DAL.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,20 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-//// Koppla till databas för autentisering och auktorisering (genom Identity) 
-//builder.Services.AddDbContext<AuthDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
-//{
-//    // Definiera krav för lösenord
-//    options.Password.RequireDigit = false; // Anger att vi inte kräver siffror
-//    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte kräver specialtecken
-//    options.Password.RequireUppercase = false; // Anger att vi inte kräver versaler
-//    options.Password.RequiredLength = 6; // Anger att vi kräver minst 6 tecken i lösenordet
+// Koppla till databas för autentisering och auktorisering (genom Identity) 
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
+builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
+{
+    // Definiera krav för lösenord
+    options.Password.RequireDigit = false; // Anger att vi inte kräver siffror
+    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte kräver specialtecken
+    options.Password.RequireUppercase = false; // Anger att vi inte kräver versaler
+    options.Password.RequiredLength = 6; // Anger att vi kräver minst 6 tecken i lösenordet
 
-//})
+})
 //    .AddRoles<IdentityRole>()
-//    .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
+    .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
 
 // Definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
 builder.Services.AddAuthorization(options =>
