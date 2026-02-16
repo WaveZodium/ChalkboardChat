@@ -38,7 +38,7 @@ namespace ChalkboardChat.UI.Pages
         {
             if (!ModelState.IsValid) // Om validering misslyckas
             {
-                // -> visa formuläret igen med felmeddelanden
+                // ...visa formuläret igen med felmeddelanden
                 return Page();
             }
             // Annars: skapa en ny användare med lokala variablen "user" 
@@ -48,7 +48,7 @@ namespace ChalkboardChat.UI.Pages
             var result = await _userManager.CreateAsync(user, Password); // Här skickar vi med lösenord
             if (result.Succeeded) // Om användaren sparas i databasen
             {
-                // -> logga in användaren och omdirigera till startsidan (sidan med meddelanden i detta fall)
+                // ...logga in användaren och omdirigera till startsidan (sidan med meddelanden i detta fall)
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToPage("/Start");
             }

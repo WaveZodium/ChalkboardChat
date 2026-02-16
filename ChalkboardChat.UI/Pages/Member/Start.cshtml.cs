@@ -7,8 +7,7 @@ using ChalkboardChat.DAL;
 
 namespace ChalkboardChat.UI.Pages.Member
 {
-    // En PageModel hanterar logiken för varje Razor Page
-    // En PageModel motsvarar en Controller i MVC-mönstret och ViewModel i MVVM-mönstret
+    // En PageModel hanterar logiken för varje Razor Page (motsvarar en Controller i MVC-mönstret och ViewModel i MVVM-mönstret)
     public class StartModel : PageModel
     {
         // DEL 1 - MANAGERS och SERVICES 
