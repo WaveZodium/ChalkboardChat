@@ -32,7 +32,7 @@ namespace ChalkboardChat.UI.Pages.Member
             }
             // Annars: hitta användarens meddelanden 
             var username = user.UserName; 
-            var messages = _appDb.Messages.Where(m => m.UserName == username); 
+            var messages = _appDb.Messages.Where(m => m.Username == username); 
             // ...och ersätt användarens namn i hens meddelanden 
             foreach (var message in messages)
             {

@@ -10,7 +10,10 @@ public interface IMessageService
 {
     //posta nytt meddelande
     Task<bool> PostMessageAsync(CreateMessageDto dto);
-    
+
     //hämta alla meddelanden för visning
     Task<List<MessageDto>> GetAllMessagesAsync(string currentUserId);
+
+    //uppdatera användarnamn i meddelanden
+    Task UpdateUsernameInMessagesAsync(string userId, string newUsername);
 }
