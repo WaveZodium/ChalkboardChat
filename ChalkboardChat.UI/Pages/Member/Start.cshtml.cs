@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ChalkboardChat.DAL.Models;
 using ChalkboardChat.BLL.Services;
 using Microsoft.AspNetCore.Mvc;
+using ChalkboardChat.DAL;
 
 namespace ChalkboardChat.UI.Pages.Member
 {
