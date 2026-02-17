@@ -13,4 +13,6 @@ public interface IMessageService
     
     //hämta alla meddelanden för visning
     Task<List<MessageDto>> GetAllMessagesAsync(string currentUserId);
+
+
 }
