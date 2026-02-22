@@ -78,8 +78,7 @@ namespace ChalkboardChat.UI.Pages.Member
             // Om lyckas
             if (result.Succeeded)
             {
-                // Uppdatera namn i meddelanden
-                await _iMessengerService.UpdateUsernameInMessagesAsync(user.Id, NewUserName);
+                // användaren har uppdaterats
                 return RedirectToPage("/Start");
             }
             // Om uppgifterna inte sparas, skicka felmeddelanden 
