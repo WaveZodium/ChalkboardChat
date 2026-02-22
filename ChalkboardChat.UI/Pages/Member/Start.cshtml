@@ -15,12 +15,12 @@
     @foreach (var message in Model.Messages)
     {
         @* Lokal variabel för egna meddelanden *@
-        var minaMedd = message.UserName == User.Identity?.Name;
+        var minaMedd = message.Username == User.Identity?.Name;
 
         <div class="message" style="border-radius:10px" @(minaMedd ? "bg-info" : "")>
             @* Highlighta de egna meddelandena *@
             <p>
-                <strong>@message.UserName</strong>
+                <strong>@message.Username</strong>
                 (@message.Date.ToLocalTime())
             </p>
             <p>@message.Message</p>

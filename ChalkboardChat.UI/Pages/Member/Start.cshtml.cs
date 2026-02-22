@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ChalkboardChat.DAL;
 using Microsoft.AspNetCore.Authorization;
 using ChalkboardChat.BLL.Interfaces;
+using ChalkboardChat.BLL.DTOs;
 
 namespace ChalkboardChat.UI.Pages.Member
 {
@@ -27,13 +28,17 @@ namespace ChalkboardChat.UI.Pages.Member
         }
 
         // EGENSKAP för att hålla listan med meddelanden
-        public List<MessageModel> Messages { get; set; }
+        public List<MessageDto> Messages { get; set; }
 
         // METOD för att visa hela listan med meddelanden 
         public async Task OnGetAsync()
         {
+            // hämta den inloggade användarens id
+            var user = await _signInManager.UserManager.GetUserAsync(User);
+            var currentUserId = user?.Id ?? string.Empty;
+
             // Hämta alla meddelanden från databasen och spara i lokal variabel "Messages"
-            Messages = await _iMessageService.GetAllMessagesAsync();
+            Messages = await _iMessageService.GetAllMessagesAsync(currentUserId);
         }
         // METOD för att skicka nytt meddelande till databas
         public async Task<IActionResult> OnPostAsync(string message)
@@ -41,9 +46,18 @@ namespace ChalkboardChat.UI.Pages.Member
             // Kolla så att det finns innehåll
             if (!string.IsNullOrWhiteSpace(message))
             {
+                // hämta den inloggade användarens id
+                var user = await _signInManager.UserManager.GetUserAsync(User);
+
+                // skapa dto för meddelande
+                var dto = new CreateMessageDto
+                {
+                    Message = message,
+                    UserId = user?.Id ?? string.Empty
+                };
+
                 // Spara det nya meddelandet i databasen
-                await _iMessageService.AddMessageAsync(message, 
-                    User.Identity!.Name);
+                await _iMessageService.PostMessageAsync(dto);
             }
             // ... och omdirigera till sida för att visa meddelandelistan igen
             return RedirectToPage(); 

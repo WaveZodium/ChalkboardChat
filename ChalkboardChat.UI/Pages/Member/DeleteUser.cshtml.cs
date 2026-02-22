@@ -32,10 +32,7 @@ namespace ChalkboardChat.UI.Pages.Member
                 // Om användare inte hittas, skicka vidare till inloggningssidan
                 return RedirectToPage("/Login");
             }
-            // Annars: byt användarnamn i användarens meddelanden
-            var username = user.UserName; 
-            await _iMessengerService.UpdateWhenExitedAsync(user.Id, username);
-            // ...och ta bort användaren från databasen
+            // ta bort användaren från databasen
             await _userManager.DeleteAsync(user); 
             // ...och redirekta till inloggningssidan
             return RedirectToPage("/Login");
