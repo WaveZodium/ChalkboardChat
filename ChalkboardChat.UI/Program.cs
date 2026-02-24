@@ -12,30 +12,29 @@ builder.Services.AddRazorPages();
 // Koppla till databas för autentisering och auktorisering (genom Identity) 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
 {
-    // Definiera krav för lösenord
-    options.Password.RequireDigit = false; // Anger att vi inte kräver siffror
-    options.Password.RequireNonAlphanumeric = false; // Anger att vi inte kräver specialtecken
-    options.Password.RequireUppercase = false; // Anger att vi inte kräver versaler
-    options.Password.RequiredLength = 6; // Anger att vi kräver minst 6 tecken i lösenordet
-
+    // definiera krav för lösenord
+    options.Password.RequireDigit = false; // anger att vi inte kräver siffror
+    options.Password.RequireNonAlphanumeric = false; // anger att vi inte kräver specialtecken
+    options.Password.RequireUppercase = false; // anger att vi inte kräver versaler
+    options.Password.RequiredLength = 6; // anger att vi kräver minst 6 tecken i lösenordet
 })
-//    .AddRoles<IdentityRole>()
+    .AddRoles<IdentityRole>() // aktiverar roller (RoleManager)
     .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
 
-// Definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-});
+// definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
+builder.Services
+    .AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 
 // Lägger till autentisering på alla sidor utom startsidan 
 builder.Services.AddRazorPages(options =>
 {
-    // Här säger vi: Vi kan nå membersidan när vi är inloggade
+    // här säger vi: vi kan nå membersidan när vi är inloggade
     options.Conventions.AuthorizeFolder("/Member");
-    // Här säger vi: Vi kan nå adminsidan när vi är inloggade OCH har rollen Admin
+    // här säger vi: vi kan nå adminsidan när vi är inloggade OCH har rollen Admin
     options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
 });
 

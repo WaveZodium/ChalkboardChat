@@ -3,28 +3,17 @@ using ChalkboardChat.DAL.Models;
 using MessageBoardApp.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChalkboardChat.BLL.Services
 {
-    internal class AuthService : IAuthService
+    internal class AuthService(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        IHttpContextAccessor httpContextAccessor) : IAuthService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public AuthService(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IHttpContextAccessor httpContextAccessor)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _httpContextAccessor = httpContextAccessor;
-        }
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         // adapter methods to satisfy IAuthService interface
         // these map simple (username, password) calls to the existing DTO-based implementations
@@ -54,11 +43,9 @@ namespace ChalkboardChat.BLL.Services
         //registrering och login
         public async Task<UserDto?> RegisterAsync(RegisterDto dto)
         {
-            
             if (string.IsNullOrWhiteSpace(dto.Username))
                 return null;
 
-            
             if (await UsernameExistsAsync(dto.Username))
                 return null;
 
@@ -66,7 +53,6 @@ namespace ChalkboardChat.BLL.Services
             var user = new ApplicationUser
             {
                 UserName = dto.Username,
-                
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -99,11 +85,12 @@ namespace ChalkboardChat.BLL.Services
 
             // hämta användare
             var user = await _userManager.FindByNameAsync(dto.Username);
-            //if (user == null || user.IsDeleted)
-            //    return null;
+            if (user == null || user.IsDeleted)
+                return null;
 
             return MapToUserDto(user);
         }
+
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
@@ -118,8 +105,8 @@ namespace ChalkboardChat.BLL.Services
                 return null;
 
             var user = await _userManager.GetUserAsync(httpContext.User);
-            //if (user == null || user.IsDeleted)
-            //    return null;
+            if (user == null || user.IsDeleted)
+                return null;
 
             return MapToUserDto(user);
         }
@@ -140,8 +127,8 @@ namespace ChalkboardChat.BLL.Services
                 return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            //if (user == null || user.IsDeleted)
-            //    return false;
+            if (user == null || user.IsDeleted)
+                return false;
 
             // kolla om username finns
             if (await UsernameExistsAsync(dto.NewUsername) && user.UserName != dto.NewUsername)
@@ -152,7 +139,7 @@ namespace ChalkboardChat.BLL.Services
             if (!result.Succeeded)
                 return false;
 
-            // uppdatera authentication cookie (?)
+            // uppdatera authentication cookie (?
             await _signInManager.RefreshSignInAsync(user);
 
             return true;
@@ -165,15 +152,15 @@ namespace ChalkboardChat.BLL.Services
                 return false;
 
             var user = await _userManager.FindByIdAsync(userId);
-            //if (user == null || user.IsDeleted)
-            //    return false;
+            if (user == null || user.IsDeleted)
+                return false;
 
             // byt lösenord via Identity
             var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
             if (!result.Succeeded)
                 return false;
 
-            // uppdatera authentication cookie (?)
+            // uppdatera authentication cookie (?
             await _signInManager.RefreshSignInAsync(user);
 
             return true;
@@ -182,15 +169,16 @@ namespace ChalkboardChat.BLL.Services
         public async Task<bool> DeleteAccountAsync(string userId, DeleteAccountDto dto)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            //if (user == null || user.IsDeleted)
-            //    return false;
+            // validate user exists and is active
+            if (user == null || user.IsDeleted)
+                return false;
 
             // verifiera lösenord
             var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: false);
             if (!passwordCheck.Succeeded)
                 return false;
 
-            // Business Logic: Soft delete
+            // business logic: soft delete
             user.IsDeleted = true;
             user.DeletedAt = DateTime.UtcNow;
 
@@ -198,7 +186,7 @@ namespace ChalkboardChat.BLL.Services
             if (!result.Succeeded)
                 return false;
 
-            // Logga ut
+            // logga ut
             await _signInManager.SignOutAsync();
 
             return true;
@@ -211,7 +199,7 @@ namespace ChalkboardChat.BLL.Services
             return user != null && !user.IsDeleted;
         }
 
-        private UserDto MapToUserDto(ApplicationUser user)
+        private static UserDto MapToUserDto(ApplicationUser user)
         {
             return new UserDto
             {

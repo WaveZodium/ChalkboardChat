@@ -9,16 +9,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ChalkboardChat.BLL.Services;
 
-public class MessageService : IMessageService
+public class MessageService(
+    IMessageRepository repository,
+    UserManager<IdentityUser> userManager) : IMessageService
 {
-    private readonly IMessageRepository _repository;
-    private readonly UserManager<IdentityUser> _userManager;
-
-    public MessageService(IMessageRepository repository, UserManager<IdentityUser> userManager)
-    {
-        _repository = repository;
-        _userManager = userManager;
-    }
+    private readonly IMessageRepository _repository = repository;
+    private readonly UserManager<IdentityUser> _userManager = userManager;
 
     //posta nytt meddelande
     public async Task<bool> PostMessageAsync(CreateMessageDto dto)
@@ -46,30 +42,23 @@ public class MessageService : IMessageService
     }
 
     //hämta alla meddelanden
-    public async Task<List<MessageDto>> GetAllMessagesAsync(string currentUserId)
-    {
+    public async Task<List<MessageDto>> GetAllMessagesAsync(string currentUserId) {
         //hämta meddelanden från repository
         var messages = await _repository.GetAllAsync();
 
-        //konvertera till dto och sortera nyast först
-        var messageDtos = new List<MessageDto>();
-
-        foreach (var msg in messages)
-        {
+        //konvertera till dto, sortera nyast först, och materialisera till list
+        return (await Task.WhenAll(messages.Select(async msg => {
             //hämta användare från identity
             var user = await _userManager.FindByIdAsync(msg.UserId);
+            var username = user?.UserName ?? "(deleted user)";
 
-            messageDtos.Add(new MessageDto
-            {
+            return new MessageDto {
                 Id = msg.Id,
                 Date = msg.CreatedAt,
                 Message = msg.Text,
-                Username = user != null ? user.UserName ?? "(deleted user)" : "(deleted user)",
+                Username = username,
                 IsCurrentUser = msg.UserId == currentUserId
-            });
-        }
-
-        //sortera nyast först
-        return messageDtos.OrderByDescending(m => m.Date).ToList();
+            };
+        }))).OrderByDescending(m => m.Date).ToList();
     }
 }
