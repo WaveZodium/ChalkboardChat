@@ -1,6 +1,9 @@
 // Lokal variabel för att använda inbyggda funktioner för att bygga appen 
+using ChalkboardChat.BLL.Interfaces;
+using ChalkboardChat.BLL.Services;
 using ChalkboardChat.DAL;
 using ChalkboardChat.DAL.Data;
+using ChalkboardChat.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +15,14 @@ builder.Services.AddRazorPages();
 // Koppla till databas för autentisering och auktorisering (genom Identity) 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
+
+// Koppla till databas för applikationsdata (meddelanden)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection"))); // Rödmarkering pga delprojekt
+
+// registrera repositories och services
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
 {

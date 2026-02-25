@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ChalkboardChat.BLL.DTOs;
 using ChalkboardChat.BLL.Interfaces;
+using ChalkboardChat.DAL.Repositories;
 using ChalkboardChat.DAL.Models;
 //using ChalkboardChat.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
