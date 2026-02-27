@@ -35,7 +35,7 @@ namespace ChalkboardChat.UI.Pages
             if (result.Succeeded)
             {
                 // Omdirigera till startsidan (med meddelanden) 
-                return RedirectToPage("/Login");
+                return RedirectToPage("/Member/Start");
             }
             // Om inloggningen misslyckas
             else

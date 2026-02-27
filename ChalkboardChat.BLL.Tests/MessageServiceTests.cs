@@ -2,7 +2,9 @@
 using ChalkboardChat.BLL.Interfaces;
 using ChalkboardChat.BLL.Services;
 using ChalkboardChat.DAL.Models;
+using ChalkboardChat.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace ChalkboardChat.BLL.Tests;
 
@@ -99,9 +101,29 @@ public class FakeMessageRepository : IMessageRepository
         return Task.CompletedTask;
     }
 
-    public Task<List<MessageEntity>> GetAllAsync()
+    public Task<IEnumerable<MessageEntity>> GetAllAsync() => Task.FromResult<IEnumerable<MessageEntity>>(Messages);
+
+    public Task<MessageEntity> GetByIdAsync(int id)
     {
-        return Task.FromResult(Messages);
+        var entity = Messages.FirstOrDefault(m => m.Id == id);
+        if (entity is null) throw new KeyNotFoundException($"Message {id} not found.");
+        return Task.FromResult(entity);
+    }
+
+    public Task UpdateAsync(MessageEntity message)
+    {
+        var index = Messages.FindIndex(m => m.Id == message.Id);
+        if (index >= 0)
+            Messages[index] = message;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(int id)
+    {
+        var entity = Messages.FirstOrDefault(m => m.Id == id);
+        if (entity is not null)
+            Messages.Remove(entity);
+        return Task.CompletedTask;
     }
 }
 

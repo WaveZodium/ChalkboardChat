@@ -1,6 +1,9 @@
 // Lokal variabel för att använda inbyggda funktioner för att bygga appen 
+using ChalkboardChat.BLL.Interfaces;
+using ChalkboardChat.BLL.Services;
 using ChalkboardChat.DAL;
 using ChalkboardChat.DAL.Data;
+using ChalkboardChat.DAL.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+// Koppla till app-db (meddelanden)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection")));
 
 // Koppla till databas för autentisering och auktorisering (genom Identity) 
 builder.Services.AddDbContext<AuthDbContext>(options =>
@@ -23,6 +30,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pg
 })
     .AddRoles<IdentityRole>() // aktiverar roller (RoleManager)
     .AddEntityFrameworkStores<AuthDbContext>(); // Rödmarkering pga delprojekt 
+
+// Koppla ihop BLL/DAL med dependency injection
+builder.Services.AddScoped<ChalkboardChat.DAL.Repositories.IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 // definierar rollbaserad policy som kräver att användaren har rollen "Admin" för att få åtkomst till vissa delar av applikationen
 builder.Services
@@ -44,6 +55,13 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Login"; // Om en användare inte är inloggad och försöker nå en skyddad sida, omdirigeras de till /Login
     options.AccessDeniedPath = "/NoAccess"; // Om en inloggad användare försöker nå en sida som kräver en roll de inte har, omdirigeras de till /AccessDenied
 });
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection")));
+
+// koppla ihop bll-kontrakt med dal-implementation
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 // Lokal variabel för att bygga appen
 var app = builder.Build();
