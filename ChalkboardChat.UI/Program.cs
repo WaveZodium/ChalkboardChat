@@ -20,6 +20,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"))); // Rödmarkering pga delprojekt 
 
+// Koppla till databas för applikationsdata (meddelanden)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection"))); // Rödmarkering pga delprojekt
+
+// registrera repositories och services
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options => // Rödmarkering pga delprojekt 
 {
     // definiera krav för lösenord

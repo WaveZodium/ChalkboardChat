@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ChalkboardChat.DAL.Data;
+﻿using ChalkboardChat.DAL.Data;
 using ChalkboardChat.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,19 +20,19 @@ public class MessageRepository : IMessageRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<MessageEntity>> GetAllAsync()
+    {
+        return await _context.Messages
+            .OrderByDescending(m => m.CreatedAt)
+            .ToListAsync();
+    }
+
     public async Task DeleteAsync(int id)
     {
         var entity = await _context.Messages.FindAsync(id);
         if (entity is null) return;
         _context.Messages.Remove(entity);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<MessageEntity>> GetAllAsync()
-    {
-        return await _context.Messages
-            .OrderByDescending(m => m.CreatedAt)
-            .ToListAsync();
     }
 
     public async Task<MessageEntity> GetByIdAsync(int id)
